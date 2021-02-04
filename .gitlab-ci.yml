@@ -17,7 +17,7 @@ before_script:
   - python -V
   - pip install virtualenv
   - virtualenv venv
-  - ./install.sh
+  - make install
   - source venv/bin/activate
   - source ./set_secrets.sh
 
