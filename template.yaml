@@ -14,7 +14,14 @@ Parameters:
       - 'true'
       - 'false'
     Default: 'false'
-    Description: 'Switch do display resources that have no drift (in sync)'
+    Description: 'Switch to display resources that have no drift (in sync)'
+    Type: String
+  ShowInSyncStacks:
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Default: 'false'
+    Description: 'Switch to display stacks that have no drift (in sync)'
     Type: String
   StackRegex:
     Default: '.*'
@@ -121,8 +128,10 @@ Resources:
         Variables:
           SLACK_WEBHOOK:
             Ref: SlackWebhook
-          SHOW_IN_SYNC:
+          SHOW_IN_SYNC_RESOURCES:
             Ref: ShowInSyncResources
+          SHOW_IN_SYNC_STACKS:
+            Ref: ShowInSyncStacks
 
   DriftDetectionQueue:
     Type: AWS::SQS::Queue

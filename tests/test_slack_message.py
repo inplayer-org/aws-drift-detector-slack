@@ -33,8 +33,10 @@ MOCK_STACK = {
 
 class TestSlackMessageBuild(unittest.TestCase):
     def tearDown(self):
-        # Reset 'SHOW_IN_SYNC' back to default, after each test.
-        os.environ['SHOW_IN_SYNC'] = 'false'
+        # Reset 'SHOW_IN_SYNC_RESOURCES' back to default, after each test.
+        os.environ['SHOW_IN_SYNC_RESOURCES'] = 'false'
+        # Reset 'SHOW_IN_SYNC_STACKS' back to default, after each test.
+        os.environ['SHOW_IN_SYNC_STACKS'] = 'false'
 
     def test_drift_message_generation(self):
         """
@@ -75,11 +77,12 @@ class TestSlackMessageBuild(unittest.TestCase):
             ]
         })
 
-    def test_drift_message_generation_with_show_in_sync_enabled(self):
+    def test_drift_message_generation_with_show_in_sync_stacks_and_resources_enabled(self):
         """
         Test that drift slack message is build correctly given stack data
         """
-        os.environ['SHOW_IN_SYNC'] = 'true'
+        os.environ['SHOW_IN_SYNC_RESOURCES'] = 'true'
+        os.environ['SHOW_IN_SYNC_STACKS'] = 'true'
         no_drift_mock_stack = MOCK_STACK.copy()
         no_drift_mock_stack['no_of_drifted_resources'] = 0
 
@@ -98,11 +101,12 @@ class TestSlackMessageBuild(unittest.TestCase):
             ]
         })
 
-    def test_no_drift_message_generation_with_show_in_sync_disabled(self):
+    def test_no_drift_message_generation_with_show_in_sync_stacks_and_resources_disabled(self):
         """
         Test that no drift slack message is build when show in sync is disabled
         """
-        os.environ['SHOW_IN_SYNC'] = 'false'
+        os.environ['SHOW_IN_SYNC_RESOURCES'] = 'false'
+        os.environ['SHOW_IN_SYNC_STACKS'] = 'false'
         no_drift_mock_stack = MOCK_STACK.copy()
         no_drift_mock_stack['no_of_drifted_resources'] = 0
 
@@ -116,7 +120,7 @@ class TestSlackMessageBuild(unittest.TestCase):
         """
         Test that drift slack message is build correctly with in sync resources included
         """
-        os.environ['SHOW_IN_SYNC'] = 'true'
+        os.environ['SHOW_IN_SYNC_RESOURCES'] = 'true'
 
         mock_message = build_slack_message(MOCK_STACK)
 

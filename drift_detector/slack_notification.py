@@ -23,13 +23,14 @@ def build_slack_message(stack):
     stack_url = get_stack_url(stack['StackId'])
     stack_name = stack['StackName']
 
-    show_in_sync_resources = os.environ.get('SHOW_IN_SYNC', 'false')
+    show_in_sync_resources = os.environ.get('SHOW_IN_SYNC_RESOURCES', 'false')
+    show_in_sync_stacks = os.environ.get('SHOW_IN_SYNC_STACKS', 'false')
 
     blocks = []
     if stack['no_of_drifted_resources'] > 0:
         blocks = create_drifted_stack_message_blocks(show_in_sync_resources, stack, stack_name, stack_url)
 
-    elif show_in_sync_resources == 'true':
+    elif show_in_sync_stacks == 'true':
         blocks = create_not_drifted_stack_message_blocks(stack_name, stack_url)
 
     return {
