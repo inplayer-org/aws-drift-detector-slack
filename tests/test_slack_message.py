@@ -75,11 +75,11 @@ class TestSlackMessageBuild(unittest.TestCase):
             ]
         })
 
-    def test_no_drift_message_generation(self):
+    def test_drift_message_generation_with_show_in_sync_enabled(self):
         """
-        Test that no drift slack message is build correctly given stack data
+        Test that drift slack message is build correctly given stack data
         """
-
+        os.environ['SHOW_IN_SYNC'] = 'true'
         no_drift_mock_stack = MOCK_STACK.copy()
         no_drift_mock_stack['no_of_drifted_resources'] = 0
 
@@ -96,6 +96,20 @@ class TestSlackMessageBuild(unittest.TestCase):
                     }
                 },
             ]
+        })
+
+    def test_no_drift_message_generation_with_show_in_sync_disabled(self):
+        """
+        Test that no drift slack message is build when show in sync is disabled
+        """
+        os.environ['SHOW_IN_SYNC'] = 'false'
+        no_drift_mock_stack = MOCK_STACK.copy()
+        no_drift_mock_stack['no_of_drifted_resources'] = 0
+
+        mock_message = build_slack_message(no_drift_mock_stack)
+
+        self.assertEqual(mock_message, {
+            'blocks': []
         })
 
     def test_drift_message_generation_with_in_sync_resources(self):

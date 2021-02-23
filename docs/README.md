@@ -17,6 +17,7 @@
  * ShowInSyncResources - Skip reporting of resources with no drift (reduces Slack message output, the default value is `false`).
  * StackRegex - Defines which stacks should be scanned for resource drift (the default value is `.*`).
  * StackBatches - Number that indicates how many stacks should be send to SQS in one batch (the default value is `10`). The duration of drift detection depends very much on the specific stack, some stacks have more resources, others less. When stack will have a lot of resources then the parameter should be decreased.
+ * DriftDetectionMaxRetries - Number indicating how many retries to make after an unsuccessful drift detection (the default value is `5`)
 
 More details can be found at https://driftdetector.com
 

@@ -24,6 +24,10 @@ Parameters:
     Default: 10
     Description: 'Number that indicates how many stacks should be send to sqs in one batch'
     Type: Number
+  DriftDetectionMaxRetries:
+    Default: 5
+    Description: 'Number indicating how many retries to make after an unsuccessful drift detection'
+    Type: Number
 Globals:
   Function:
     Timeout: 900
@@ -94,6 +98,8 @@ Resources:
         Variables:
           SLACK_NOTIFICATION_FUNCTION:
             Ref: SlackNotificationFuntion
+          DRIFT_DETECTION_MAX_RETRIES:
+            Ref: DriftDetectionMaxRetries
       Events:
         SQSEvent:
           Type: SQS
