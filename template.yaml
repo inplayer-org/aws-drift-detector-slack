@@ -14,7 +14,14 @@ Parameters:
       - 'true'
       - 'false'
     Default: 'false'
-    Description: 'Switch do display resources that have no drift (in sync)'
+    Description: 'Switch to display resources that have no drift (in sync)'
+    Type: String
+  ShowInSyncStacks:
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Default: 'false'
+    Description: 'Switch to display stacks that have no drift (in sync)'
     Type: String
   StackRegex:
     Default: '.*'
@@ -23,6 +30,10 @@ Parameters:
   StackBatches:
     Default: 10
     Description: 'Number that indicates how many stacks should be send to sqs in one batch'
+    Type: Number
+  DriftDetectionMaxRetries:
+    Default: 5
+    Description: 'Number indicating how many retries to make after an unsuccessful drift detection'
     Type: Number
 Globals:
   Function:
@@ -37,7 +48,7 @@ Metadata:
     ReadmeUrl: docs/README.md
     Labels: [ 'cloudformation', 'slack', 'drift' ]
     HomePageUrl: https://driftdetector.com
-    SemanticVersion: 2.1.0
+    SemanticVersion: 2.2.0
     SourceCodeUrl: https://github.com/patternmatch/aws-drift-detector-slack
 
 Resources:
@@ -94,6 +105,8 @@ Resources:
         Variables:
           SLACK_NOTIFICATION_FUNCTION:
             Ref: SlackNotificationFuntion
+          DRIFT_DETECTION_MAX_RETRIES:
+            Ref: DriftDetectionMaxRetries
       Events:
         SQSEvent:
           Type: SQS
@@ -115,8 +128,10 @@ Resources:
         Variables:
           SLACK_WEBHOOK:
             Ref: SlackWebhook
-          SHOW_IN_SYNC:
+          SHOW_IN_SYNC_RESOURCES:
             Ref: ShowInSyncResources
+          SHOW_IN_SYNC_STACKS:
+            Ref: ShowInSyncStacks
 
   DriftDetectionQueue:
     Type: AWS::SQS::Queue
