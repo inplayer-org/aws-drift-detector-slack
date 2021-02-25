@@ -9,7 +9,6 @@ from utils import chunks
 CHECK_STATUS_MAX_ATTEMPTS = 100
 CHECK_STATUS_ATTEMPT_WAIT_TIME = 6
 CF_CALLS_CHUNK_SIZE = 3
-DRIFT_DETECTION_MAX_RETRIES = 5
 
 
 def is_arn(physical_resource_id):
@@ -42,34 +41,15 @@ def parse_arn(arn):
     return result['resource']
 
 
-def get_emoji_for_status(status):
-    if status == 'DELETED':
-        return ':x:'
-    elif status == 'MODIFIED':
-        return ':warning:'
-    elif status == 'IN_SYNC':
-        return ':heavy_check_mark:'
-
-    return ''
-
-
 def get_stack_url(stack_id):
     return f'https://console.aws.amazon.com/cloudformation/home#/stacks/drifts?stackId={urllib.parse.quote(stack_id)}'
 
 
-def is_status_proper_to_check_drift(status):
-    return status in (
-        'CREATE_COMPLETE',
-        'UPDATE_COMPLETE',
-        'UPDATE_ROLLBACK_COMPLETE'
-    )
-
-
-def detect_drift(cf_client, stacks):
+def detect_drift(cf_client, stacks, drift_detection_max_retries):
     stacks_to_check = json.loads(stacks)
     attempts = 0
 
-    while stacks_to_check and attempts < DRIFT_DETECTION_MAX_RETRIES:
+    while stacks_to_check and attempts < drift_detection_max_retries:
         attempts += 1
         split_into_chunks_stacks = chunks(stacks_to_check, CF_CALLS_CHUNK_SIZE)
 
@@ -163,12 +143,13 @@ def lambda_handler(event, context):
         lambda_client = boto3.client('lambda')
 
         function = os.environ['SLACK_NOTIFICATION_FUNCTION']
+        drift_detection_max_retries = int(os.environ['DRIFT_DETECTION_MAX_RETRIES'])
 
         print("Drift detector lambda")
 
         for record in event['Records']:
             payload = record["body"]
-            stacks, detection_failed_stacks = detect_drift(cf_client, payload)
+            stacks, detection_failed_stacks = detect_drift(cf_client, payload, drift_detection_max_retries)
             invoke_slack_notification_lambda(stacks, detection_failed_stacks, lambda_client, function)
     except Exception as e:
         print("Unexpected error: %s" % e)

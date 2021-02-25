@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, './drift_detector')
 
-from drift_detector.drift_detector import is_status_proper_to_check_drift
+from drift_detector.discover_stacks import is_status_proper_to_check_drift
 
 
 class TestIsStatusProperToCheckDrift(unittest.TestCase):
