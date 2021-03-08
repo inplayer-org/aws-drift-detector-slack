@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: 'AWS CloudFormation drift-detector to Slack'
 Parameters:
+  DriftDetectionQueueName:
+    Description: 'SQS queue name'
+    Type: String
+    AllowedPattern: '^[-a-zA-Z0-9_]{1,75}$'
+    Default: 'DriftDetectionQueue'
   SlackWebhook:
     Description: 'Webhook used to post messages about drift detection'
     Type: String
@@ -136,6 +141,7 @@ Resources:
   DriftDetectionQueue:
     Type: AWS::SQS::Queue
     Properties:
+      QueueName: !Sub '${DriftDetectionQueueName}.fifo'
       FifoQueue: true
       VisibilityTimeout: 900
       ContentBasedDeduplication: true
